@@ -97,7 +97,7 @@ LMIN=$(date -d "${LSTSUBSLCT} 10 minutes ago" '+%Y-%m-%dT%H:%M')
 SGNPNT=$(sed -n /${LMIN}/,/${LSTSUBSLCT}/p ${DBGLOG} | egrep -o '[0-9]{1,2}\/64' | sed '/\ /d' | sort -u | wc -l)
 
 
-echo "P \"CHIA signage points last 10 minutes\" - signage_points=${SGNPNT};${SGNPNT_WARN};${SGNPNT_CRIT}"
+echo "P \"CHIA signage points last 10 minutes\" - signage_points=${SGNPNT};${SGNPNT_WARN}:;${SGNPNT_CRIT}:"
 
 }
 
