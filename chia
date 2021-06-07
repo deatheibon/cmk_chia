@@ -3,7 +3,7 @@
 #### VARIABLES ####
 ###################
 
-DBGLOG=/volume1/chia_data/mainnet/log/debug.log
+DBGLOG=/volume1/chia_data/mainnet/log/debug.log*
 CHIACMD="docker exec chia venv/bin/chia"
 
 #### PROOF RESPONSE THRESHOLDS (should never exceed 30 seconds) ####
@@ -83,7 +83,6 @@ echo "P \"CHIA proofs eligible / min \" pepm=${PEPM} ${PEPM} at ${LMIN##*T}"
 }
 
 proof_response_time(){
-DBGLOG=/volume1/chia_data/mainnet/log/debug.log
 LMIN=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M')
 PRSP=$(grep ${LMIN} ${DBGLOG} | awk '/INFO.*plots were eligible for farming.*Found.*proofs.*Time: [0-9]{1,5}.[0-9]{1,5} s/ {print $16}' | sort | tail -1)
 
@@ -91,7 +90,6 @@ echo "P \"CHIA proof response\" response_time=${PRSP};${PRSP_WARN};${PRSP_CRIT} 
 }
 
 signage_points(){
-DBGLOG=/volume1/chia_data/mainnet/log/debug.log
 LSTSUBSLCT=$(awk '/full_node.*INFO.*Finished sub slot.*64\/64/ {print $1}' ${DBGLOG} | tail -1)
 LMIN=$(date -d "${LSTSUBSLCT} 10 minutes ago" '+%Y-%m-%dT%H:%M')
 SGNPNT=$(sed -n /${LMIN}/,/${LSTSUBSLCT}/p ${DBGLOG} | egrep -o '[0-9]{1,2}\/64' | sed '/\ /d' | sort -u | wc -l)
