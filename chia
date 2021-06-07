@@ -1,0 +1,110 @@
+#!/bin/bash
+###################
+#### VARIABLES ####
+###################
+
+DBGLOG=/volume1/chia_data/mainnet/log/debug.log
+CHIACMD="docker exec chia venv/bin/chia"
+
+#### PROOF RESPONSE THRESHOLDS (should never exceed 30 seconds) ####
+PRSP_WARN="5"
+PRSP_CRIT="10"
+
+#### SIGNAGE POINT THRESHOLDS (should be 64 in 10 minutes) ####
+SGNPNT_WARN="63"
+SGNPNT_CRIT="62"
+
+farm_summary(){
+FRMSUMM=$(${CHIACMD} farm summary)
+STATUS=$(echo "${FRMSUMM}" | awk -F: '/Farming status/ {print $2}' | sed 's/^ *//g')
+if [ "${STATUS}" == "Farming" ];then
+
+		echo "0 \"CHIA status\" - ${STATUS}"
+
+	else
+
+		echo "2 \"CHIA status\" - ${STATUS}"
+
+fi
+}
+
+chia_balance(){
+BALANCE=$(echo "${FRMSUMM}" | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
+
+if [ -z $(echo ${BALANCE} | grep -E "[0-9].*") ];then
+	
+	echo "2 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
+
+else
+	
+	echo "0 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
+
+fi
+}
+
+plot_count(){
+PLTCNT=$(echo "${FRMSUMM}" | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
+
+if [ -z $(echo ${PLTCNT} | grep -E "[0-9].*") ];then
+
+	echo "2 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+
+else
+
+	echo "0 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+
+fi
+}
+
+check_version(){
+LATEST=$(curl -s https://github.com/Chia-Network/chia-blockchain/tags | egrep "a href.*releases/tag/" | egrep -o "[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}" | head -1)
+ACTIVE=$(${CHIACMD} version | egrep -o "[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}" | sed '/\ /d')
+LATEST_NUMERIC=$(echo ${LATEST} | sed 's/\.//g')
+ACTIVE_NUMERIC=$(echo ${ACTIVE} | sed 's/\.//g')
+
+if [ ! -z "${LATEST_NUMERIC}" -a "${ACTIVE_NUMERIC}" ];then
+
+	if [ ${LATEST_NUMERIC} -gt ${ACTIVE_NUMERIC} ]; then
+
+		echo "2 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
+	
+	else
+
+		echo "0 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
+	fi
+fi
+}
+
+proof_eligible_per_minute(){
+LMIN=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M')
+PEPM=$(grep ${LMIN} ${DBGLOG} | egrep -o "INFO.*[0-9].*eligible for farming" | wc -l)
+
+echo "P \"CHIA proofs eligible / min \" pepm=${PEPM} ${PEPM} at ${LMIN##*T}"
+}
+
+proof_response_time(){
+DBGLOG=/volume1/chia_data/mainnet/log/debug.log
+LMIN=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M')
+PRSP=$(grep ${LMIN} ${DBGLOG} | awk '/INFO.*plots were eligible for farming.*Found.*proofs.*Time: [0-9]{1,5}.[0-9]{1,5} s/ {print $16}' | sort | tail -1)
+
+echo "P \"CHIA proof response\" response_time=${PRSP};${PRSP_WARN};${PRSP_CRIT} worst last minute in seconds"
+}
+
+signage_points(){
+DBGLOG=/volume1/chia_data/mainnet/log/debug.log
+LSTSUBSLCT=$(awk '/full_node.*INFO.*Finished sub slot.*64\/64/ {print $1}' ${DBGLOG} | tail -1)
+LMIN=$(date -d "${LSTSUBSLCT} 10 minutes ago" '+%Y-%m-%dT%H:%M')
+SGNPNT=$(sed -n /${LMIN}/,/${LSTSUBSLCT}/p ${DBGLOG} | egrep -o '[0-9]{1,2}\/64' | sed '/\ /d' | sort -u | wc -l)
+
+
+echo "P \"CHIA signage points last 10 minutes\" - signage_points=${SGNPNT};${SGNPNT_WARN};${SGNPNT_CRIT}"
+
+}
+
+farm_summary
+chia_balance
+plot_count
+check_version
+proof_eligible_per_minute
+proof_response_time
+signage_points
