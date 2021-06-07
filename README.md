@@ -1,7 +1,7 @@
 # cmk_chia
 Check_mk local check for chia blockchain. Working with docker and non-docker installations (configurable)
 # features
-Monitor status, plot count, latest version, eligible proofs last minute, proof response time, signage points. 
+Monitor status, plot count, latest version, eligible proofs last minute, proof response time, signage points. \
 Configurable debug.log location, Chia cmd (docker / non-docker), monitoring thresholds
 disable unwanted checks simply by commting function calls at the bottom of the script
 # installation
