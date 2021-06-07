@@ -19,11 +19,11 @@ FRMSUMM=$(${CHIACMD} farm summary)
 STATUS=$(echo "${FRMSUMM}" | awk -F: '/Farming status/ {print $2}' | sed 's/^ *//g')
 if [ "${STATUS}" == "Farming" ];then
 
-		echo "0 \"CHIA status\" - ${STATUS}"
+                echo "0 \"CHIA status\" - ${STATUS}"
 
-	else
+        else
 
-		echo "2 \"CHIA status\" - ${STATUS}"
+                echo "2 \"CHIA status\" - ${STATUS}"
 
 fi
 }
@@ -32,12 +32,12 @@ chia_balance(){
 BALANCE=$(echo "${FRMSUMM}" | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${BALANCE} | grep -E "[0-9].*") ];then
-	
-	echo "2 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
+
+        echo "2 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
 
 else
-	
-	echo "0 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
+
+        echo "0 \"CHIA balance\" balance=${BALANCE} ${BALANCE}"
 
 fi
 }
@@ -47,11 +47,11 @@ PLTCNT=$(echo "${FRMSUMM}" | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${PLTCNT} | grep -E "[0-9].*") ];then
 
-	echo "2 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+        echo "2 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
 
 else
 
-	echo "0 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+        echo "0 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
 
 fi
 }
@@ -64,14 +64,14 @@ ACTIVE_NUMERIC=$(echo ${ACTIVE} | sed 's/\.//g')
 
 if [ ! -z "${LATEST_NUMERIC}" -a "${ACTIVE_NUMERIC}" ];then
 
-	if [ ${LATEST_NUMERIC} -gt ${ACTIVE_NUMERIC} ]; then
+        if [ ${LATEST_NUMERIC} -gt ${ACTIVE_NUMERIC} ]; then
 
-		echo "2 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
-	
-	else
+                echo "2 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
 
-		echo "0 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
-	fi
+        else
+
+                echo "0 \"CHIA latest version is\" - ${LATEST} running: ${ACTIVE}"
+        fi
 fi
 }
 
@@ -95,7 +95,7 @@ LMIN=$(date -d "${LSTSUBSLCT} 10 minutes ago" '+%Y-%m-%dT%H:%M')
 SGNPNT=$(sed -n /${LMIN}/,/${LSTSUBSLCT}/p ${DBGLOG} | egrep -o '[0-9]{1,2}\/64' | sed '/\ /d' | sort -u | wc -l)
 
 
-echo "P \"CHIA signage points last 10 minutes\" - signage_points=${SGNPNT};${SGNPNT_WARN}:;${SGNPNT_CRIT}:"
+echo "P \"CHIA signage points last 10 minutes\" signage_points=${SGNPNT};${SGNPNT_WARN}:;${SGNPNT_CRIT}:"
 
 }
 
