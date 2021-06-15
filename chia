@@ -102,7 +102,7 @@ echo "P \"CHIA signage points last 10 minutes\" signage_points=${SGNPNT};${SGNPN
 time_to_win(){
 TTW=$(echo "${FRMSUMM}" | awk -F: '/Expected time to win:/ {print $2}')
 
-echo "P \"CHIA Expected time to win\" - ${TTW}"
+echo "P \"CHIA expected time to win\" - ${TTW}"
 }
 
 farm_summary
