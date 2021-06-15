@@ -99,6 +99,12 @@ echo "P \"CHIA signage points last 10 minutes\" signage_points=${SGNPNT};${SGNPN
 
 }
 
+time_to_win(){
+TTW=$(echo "${FRMSUMM}" | awk -F: '/Expected time to win:/ {print $2}')
+
+echo "P \"CHIA Expected time to win\" - ${TTW}"
+}
+
 farm_summary
 chia_balance
 plot_count
@@ -106,3 +112,4 @@ check_version
 proof_eligible_per_minute
 proof_response_time
 signage_points
+time_to_win
