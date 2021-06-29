@@ -29,7 +29,7 @@ fi
 }
 
 chia_balance(){
-BALANCE=$(echo "${FRMSUMM}" | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
+BALANCE=$(${CHIACMD} farm summary | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${BALANCE} | grep -E "[0-9].*") ];then
 
@@ -43,7 +43,7 @@ fi
 }
 
 plot_count(){
-PLTCNT=$(echo "${FRMSUMM}" | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
+PLTCNT=$(${CHIACMD} farm summary | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${PLTCNT} | grep -E "[0-9].*") ];then
 
@@ -100,7 +100,7 @@ echo "P \"CHIA signage points last 10 minutes\" signage_points=${SGNPNT};${SGNPN
 }
 
 time_to_win(){
-TTW=$(echo "${FRMSUMM}" | awk -F: '/Expected time to win:/ {print $2}')
+TTW=$(${CHIACMD} farm summary | awk -F: '/Expected time to win:/ {print $2}')
 
 echo "P \"CHIA expected time to win\" - ${TTW}"
 }
