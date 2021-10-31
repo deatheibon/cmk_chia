@@ -7,12 +7,16 @@ DBGLOG=/volume1/chia_data/mainnet/log/debug.log*
 CHIACMD="docker exec chia venv/bin/chia"
 
 #### PROOF RESPONSE THRESHOLDS (should never exceed 30 seconds) ####
-PRSP_WARN="5"
-PRSP_CRIT="10"
+PRSP_WARN="25"
+PRSP_CRIT="30"
 
 #### SIGNAGE POINT THRESHOLDS (should be 64 in 10 minutes) ####
 SGNPNT_WARN="63"
 SGNPNT_CRIT="62"
+
+#### PLOT COUNT THRESHOLDS ####
+PLTCNT_WARN="1700"
+PLTCNT_CRIT="1000"
 
 farm_summary(){
 FRMSUMM=$(${CHIACMD} farm summary)
@@ -47,11 +51,11 @@ PLTCNT=$(${CHIACMD} farm summary | awk -F: '/Plot count/ {print $2}' | sed 's/^ 
 
 if [ -z $(echo ${PLTCNT} | grep -E "[0-9].*") ];then
 
-        echo "2 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+        echo "P \"CHIA plots\" plots=${PLTCNT};${PLTCNT_WARN}:;${PLTCNT_CRIT}:"
 
 else
 
-        echo "0 \"CHIA plots\" plots=${PLTCNT} ${PLTCNT}"
+        echo "P \"CHIA plots\" plots=${PLTCNT};${PLTCNT_WARN}:;${PLTCNT_CRIT}:"
 
 fi
 }
