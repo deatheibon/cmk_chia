@@ -17,9 +17,9 @@ SGNPNT_CRIT="62"
 #### PLOT COUNT THRESHOLDS ####
 PLTCNT_WARN="1700"
 PLTCNT_CRIT="1000"
+FRMSUMM=$(${CHIACMD} farm summary)
 
 farm_summary(){
-FRMSUMM=$(${CHIACMD} farm summary)
 STATUS=$(echo "${FRMSUMM}" | awk -F: '/Farming status/ {print $2}' | sed 's/^ *//g')
 if [ "${STATUS}" == "Farming" ];then
 
@@ -33,7 +33,7 @@ fi
 }
 
 chia_balance(){
-BALANCE=$(${CHIACMD} farm summary | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
+BALANCE=$(echo "${FRMSUMM}" | awk -F: '/Total chia farmed/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${BALANCE} | grep -E "[0-9].*") ];then
 
@@ -47,7 +47,7 @@ fi
 }
 
 plot_count(){
-PLTCNT=$(${CHIACMD} farm summary | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
+PLTCNT=$(echo "${FRMSUMM}" | awk -F: '/Plot count/ {print $2}' | sed 's/^ *//g')
 
 if [ -z $(echo ${PLTCNT} | grep -E "[0-9].*") ];then
 
@@ -104,7 +104,7 @@ echo "P \"CHIA signage points last 10 minutes\" signage_points=${SGNPNT};${SGNPN
 }
 
 time_to_win(){
-TTW=$(${CHIACMD} farm summary | awk -F: '/Expected time to win:/ {print $2}')
+TTW=$(echo "${FRMSUMM}" | awk -F: '/Expected time to win:/ {print $2}')
 
 echo "P \"CHIA expected time to win\" - ${TTW}"
 }
@@ -112,8 +112,8 @@ echo "P \"CHIA expected time to win\" - ${TTW}"
 farm_summary
 chia_balance
 plot_count
+time_to_win
 check_version
 proof_eligible_per_minute
 proof_response_time
 signage_points
-time_to_win
