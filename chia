@@ -118,11 +118,11 @@ BCS=$(${CHIACMD} show -s | awk -F: '/Current Blockchain Status/ {print $2}' | xa
 
 if [ "${BCS}" == "Full Node Synced" ]; then
 
-        echo "0 \"CHIA Chain status\" - ${BCS}"
+        echo "0 \"CHIA chain status\" - ${BCS}"
 
 else
 
-    echo "2 \"CHIA Chain status\" - ${BCS}"
+    echo "2 \"CHIA chain status\" - ${BCS}"
 
 fi
 }
@@ -131,7 +131,7 @@ full_node_connections(){
 
 FNC=$(${CHIACMD} show -c | grep FULL_NODE | wc -l)
 
-echo "P \"CHIA Full Node Conn\" connections=${FNC};${FNC_WARN}:;${FNC_CRIT}:"
+echo "P \"CHIA full node Connections\" connections=${FNC};${FNC_WARN}:;${FNC_CRIT}:"
 }
 
 farm_summary
