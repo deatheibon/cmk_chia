@@ -19,6 +19,10 @@ PLTCNT_WARN="1700"
 PLTCNT_CRIT="1000"
 FRMSUMM=$(${CHIACMD} farm summary)
 
+#### FULL_NODE CONNECTION THRESHOLDS ####
+FNC_WARN="2"
+FNC_CRIT="0"
+
 farm_summary(){
 STATUS=$(echo "${FRMSUMM}" | awk -F: '/Farming status/ {print $2}' | sed 's/^ *//g')
 if [ "${STATUS}" == "Farming" ];then
@@ -109,7 +113,29 @@ TTW=$(echo "${FRMSUMM}" | awk -F: '/Expected time to win:/ {print $2}')
 echo "P \"CHIA expected time to win\" - ${TTW}"
 }
 
+blockchain_status(){
+BCS=$(${CHIACMD} show -s | awk -F: '/Current Blockchain Status/ {print $2}' | xargs)
+
+if [ "${BCS}" == "Full Node Synced" ]; then
+
+        echo "0 \"CHIA Chain status\" - ${BCS}"
+
+else
+
+    echo "2 \"CHIA Chain status\" - ${BCS}"
+
+fi
+}
+
+full_node_connections(){
+
+FNC=$(${CHIACMD} show -c | grep FULL_NODE | wc -l)
+
+echo "P \"CHIA Full Node Conn\" connections=${FNC};${FNC_WARN}:;${FNC_CRIT}:"
+}
+
 farm_summary
+blockchain_status
 chia_balance
 plot_count
 time_to_win
@@ -117,3 +143,4 @@ check_version
 proof_eligible_per_minute
 proof_response_time
 signage_points
+full_node_connections
