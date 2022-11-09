@@ -129,7 +129,7 @@ fi
 
 full_node_connections(){
 
-FNC=$(${CHIACMD} show -c | grep FULL_NODE | wc -l)
+FNC=$(${CHIACMD} peer -c full_node | grep FULL_NODE | wc -l)
 
 echo "P \"CHIA full node Connections\" connections=${FNC};${FNC_WARN}:;${FNC_CRIT}:"
 }
